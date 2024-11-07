@@ -1,0 +1,145 @@
+<div class="container">
+    <h1>Create New Order</h1>
+    <div class="">
+        <form class="form-group" [formGroup]="orderForm">
+            <div class="row">
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Cliente:</label>
+                        <input type="text" class="form-control" formControlName="customerName" [ngClass]="{'is-invalid': orderForm.get('customerName')?.invalid && orderForm.get('customerName')?.touched}">
+                        <div class="invalid-feedback">
+                            @if(orderForm.get('customerName')?.getError('required')){
+                                <span>El nombre del cliente es requerido.</span>
+                            }
+                            @if(orderForm.get('customerName')?.getError('minlength')){
+                                <span>El nombre es muy corto.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label>Email:</label>
+                        <input type="email" class="form-control" formControlName="email" [ngClass]="{'is-invalid': orderForm.get('email')?.invalid && orderForm.get('email')?.touched}">
+                        <div class="invalid-feedback">
+                            @if(orderForm.get('email')?.getError('required')){
+                                <span>El email del cliente es requerido.</span>
+                            }
+                            @if(orderForm.get('email')?.getError('email')){
+                                <span>Formato de email incorrecto.</span>
+                            }
+                            @if(orderForm.get('email')?.errors?.['emailOrderLimit']){
+                                <span>El cliente ha realizado demasiados pedidos.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Productos</h5>
+                        </div>
+                        <button class="btn btn-primary" (click)="addProduct()">+</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div formArrayName="products">
+                        @for (p of productsFormArray.controls; track $index) {
+                        <div [formGroupName]="$index">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label class="form-label">Producto:</label>
+                                        <select class="form-control" formControlName="productId">
+                                            <option value="" selected disabled>-- Seleccione --</option>
+                                            @for (item of productos; track item.id) {
+                                                <option [value]="item.id">{{item.name}}</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="mb-3">
+                                        <label class="form-label">Cantidad:</label>
+                                        <input type="number" class="form-control" formControlName="quantity" min="0"
+                                            max="stock">
+                                            @if(p.get('quantity')?.getError('max')){
+                                                <div class="text-danger">La cantidad no puede superar el stock.</div>
+                                            }
+                                            @if(p.get('quantity')?.getError('min')){
+                                                <div class="text-danger">La cantidad debe ser mayor a 1.</div>
+                                            }
+                                            @if(p.get('quantity')?.getError('max')){
+                                                <div class="text-danger">La cantidad es requerida.</div>
+                                            }
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="mb-3">
+                                        <label class="form-label">Precio:</label>
+                                        <input type="number" class="form-control" readonly
+                                            formControlName="price">
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="mb-3">
+                                        <label class="form-label">Stock:</label>
+                                        <input type="number" class="form-control" formControlName="stock"
+                                            formControlName="stock" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <button class="btn btn-danger" (click)="removeProduct($index)">X</button>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        @if(orderForm.get('products')?.getError('duplicngatedProduct')){
+                            <div class="text-danger">
+                                El producto ya se encuentra agregado.
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Productos Seleccionados</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-end">
+                    <div class="col-6">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                Total:
+                                
+                            </div>
+                            <div>
+                                <span>{{total | currency:'ARS':'symbol':'1.2-2'}}</span>
+                            </div>
+                        </div>
+                        @if(hasDiscount){
+                            <div class="text-success mt-2">
+                                Descuento de 10%
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" (click)="onSubmit()">Crear Orden</button>
+    </div>
+</div>

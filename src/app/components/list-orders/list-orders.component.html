@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Orders</h3>
+        <button class="btn btn-primary sm" routerLink="create-order">Create New Order</button>
+    </div>
+    <div class="card pb-3 p-3">
+        <form class="pb-3">
+            <input [formControl]="filtro" type="text" class="form-control" placeholder="Search by customer or email..."
+                name="busqueda" id="busqueda">
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Código de Orden</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Productos</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of orders; track $index) {
+                <tr>
+                    <td>{{item.orderCode}}</td>
+                    <td>{{item.customerName}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.products.length}} items</td>
+                    <td>{{item.timestamp | date: 'dd/MM/yyyy'}}</td>
+                    <td>{{item.total | currency}}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
